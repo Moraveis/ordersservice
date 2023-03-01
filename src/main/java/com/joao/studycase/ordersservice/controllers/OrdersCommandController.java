@@ -1,24 +1,37 @@
 package com.joao.studycase.ordersservice.controllers;
 
-import org.springframework.beans.BeanUtils;
+import com.joao.studycase.ordersservice.commands.CreatedOrderCommand;
+import com.joao.studycase.ordersservice.domain.OrderStatus;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/orders")
 public class OrdersCommandController {
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<OrderResponse> createOrder(@RequestBody(required = true) OrderRequest request) {
-        OrderResponse response = new OrderResponse();
-        BeanUtils.copyProperties(request, response);
+    private final CommandGateway commandGateway;
 
-        return Collections.singletonList(response);
+    public OrdersCommandController(CommandGateway commandGateway) {
+        this.commandGateway = commandGateway;
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public String createOrder(@RequestBody OrderRequest request) {
+        CreatedOrderCommand createdOrderCommand = CreatedOrderCommand.builder()
+                .userId("27b95829-4f3f-4ddf-8983-151ba010e35b")
+                .productId(request.getProductId())
+                .addressId(request.getAddressId())
+                .quantity(request.getQuantity())
+                .orderId(UUID.randomUUID().toString())
+                .orderStatus(OrderStatus.CREATED)
+                .build();
+
+        return commandGateway.sendAndWait(createdOrderCommand);
     }
 }
