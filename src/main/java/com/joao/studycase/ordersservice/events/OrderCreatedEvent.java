@@ -1,7 +1,6 @@
 package com.joao.studycase.ordersservice.events;
 
 import com.joao.studycase.ordersservice.domain.OrderStatus;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
