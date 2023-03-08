@@ -1,4 +1,4 @@
-package com.joao.studycase.ordersservice.core;
+package com.joao.studycase.ordersservice.commons;
 
 import lombok.Builder;
 import lombok.Data;

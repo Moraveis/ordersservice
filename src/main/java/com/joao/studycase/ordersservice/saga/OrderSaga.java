@@ -1,6 +1,6 @@
 package com.joao.studycase.ordersservice.saga;
 
-import com.joao.studycase.ordersservice.core.ReserveProductCommand;
+import com.joao.studycase.ordersservice.commons.ReserveProductCommand;
 import com.joao.studycase.ordersservice.events.OrderCreatedEvent;
 import org.axonframework.commandhandling.CommandCallback;
 import org.axonframework.commandhandling.CommandMessage;
