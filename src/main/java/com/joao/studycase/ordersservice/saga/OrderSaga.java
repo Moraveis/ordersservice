@@ -1,5 +1,6 @@
 package com.joao.studycase.ordersservice.saga;
 
+import com.joao.studycase.ordersservice.commons.ProductReservedEvent;
 import com.joao.studycase.ordersservice.commons.ReserveProductCommand;
 import com.joao.studycase.ordersservice.events.OrderCreatedEvent;
 import org.axonframework.commandhandling.CommandCallback;
@@ -39,5 +40,10 @@ public class OrderSaga {
                 }
             }
         });
+    }
+
+    @SagaEventHandler(associationProperty = "orderId")
+    public void handle(ProductReservedEvent productReservedEvent) {
+        // TODO: process user payment
     }
 }
