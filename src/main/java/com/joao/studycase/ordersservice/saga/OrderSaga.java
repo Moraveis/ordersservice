@@ -1,5 +1,6 @@
 package com.joao.studycase.ordersservice.saga;
 
+import com.joao.studycase.ordersservice.commons.ProcessPaymentCommand;
 import com.joao.studycase.ordersservice.commons.ProductReservedEvent;
 import com.joao.studycase.ordersservice.commons.ReserveProductCommand;
 import com.joao.studycase.ordersservice.commons.User;
@@ -16,6 +17,8 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.spring.stereotype.Saga;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Saga
 public class OrderSaga {
@@ -55,7 +58,7 @@ public class OrderSaga {
         User userDetails;
 
         try {
-             userDetails = queryGateway.query(fetchUserPaymentDetailsQuery, ResponseTypes.instanceOf(User.class)).join();
+            userDetails = queryGateway.query(fetchUserPaymentDetailsQuery, ResponseTypes.instanceOf(User.class)).join();
         } catch (Exception ex) {
             // TODO: compensation transaction
             return;
@@ -64,6 +67,24 @@ public class OrderSaga {
         if (userDetails == null) {
             // TODO: compensation transaction
             return;
+        }
+
+        ProcessPaymentCommand processPaymentCommand = ProcessPaymentCommand.builder()
+                .orderId(productReservedEvent.getOrderId())
+                .paymentDetails(userDetails.getPaymentDetails())
+                .paymentId(UUID.randomUUID().toString())
+                .build();
+
+        String result = null;
+
+        try {
+            result = commandGateway.sendAndWait(processPaymentCommand, 10, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            // TODO: compensation transaction
+        }
+
+        if (result == null) {
+            // TODO: compensation transaction
         }
     }
 }
